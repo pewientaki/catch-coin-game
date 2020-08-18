@@ -1,23 +1,22 @@
 let p1Button = document.querySelector("#p1");
 let resetButton = document.querySelector("#reset");
+let levelGif = document.querySelector('#levelUp');
 let p1Score = 0;
 let score = p1Score;
 let p1Display = document.querySelector("#p1Display");
 let gameOver = false;
 let winningScore = 5;
+let level = 0;
 let numInput = document.querySelector("input");
 let scoreLimit = document.querySelector("p span");
+let levelDisplay = document.querySelector("#levelDisplay");
 let scoreSelect = document.querySelector("input");
-// let canvas = document.querySelector('#gameArea');
-// let ctx = canvas.getContext('2d');
-let startTop = 0;
-let startLeft = 0;
-let height = 600;
-let width = 600;
-
-
-// console.log(canvas.getBoundingClientRect())
-
+let gameArea = document.querySelector('#gameArea');
+let startTop = gameArea.clientTop;
+let startLeft = gameArea.clientLeft;
+let height = gameArea.clientHeight;
+let width = gameArea.clientWidth;
+const borderMargin = 5;
 
 function isTouching(a, b) {
 	const aRect = a.getBoundingClientRect();
@@ -28,14 +27,14 @@ function isTouching(a, b) {
 		aRect.left + aRect.width < bRect.left ||
 		aRect.left > bRect.left + bRect.width
 	);
-}
+};
 
 const avatar = document.querySelector('#player');
-const target = document.querySelector('#coin');
+const target = document.querySelector('#target');
 let currentDirection;
 let timerId = 0;
-const interval = 100;
-const stepPixels = 50;
+const interval = 10;
+let stepPixels = 10;
 
 function move() {
 	if (!isInBorder(avatar)) {
@@ -55,55 +54,49 @@ function move() {
 
 			default:
 				break;
-		}
-	}
+		};
+	};
 
 	if (isTouching(avatar, target)) {
 		moveTarget();
 		addPoint();
-	}
-}
-
+	};
+};
 
 window.addEventListener('keyup', function (event) {
 	if (event.key === 'ArrowDown' || event.key === 'Down') {
 		currentDirection = 'Down';
-		// moveVertical(avatar, 50);
-
+		avatar.style.transform = 'rotate(-0.7turn)';
 	} else if (event.key === 'ArrowUp' || event.key === 'Up') {
 		currentDirection = 'Up';
-		// moveVertical(avatar, -50);
-
+		avatar.style.transform = 'rotate(0.7turn)';
 	} else if (event.key === 'ArrowRight' || event.key === 'Right') {
 		currentDirection = 'Right';
-		// moveHorizontal(avatar, 50);
 		avatar.style.transform = 'scale(1, 1)';
 	} else if (event.key === 'ArrowLeft' || event.key === 'Left') {
 		currentDirection = 'Left';
-		// moveHorizontal(avatar, -50);
-
 		avatar.style.transform = 'scale(-1, 1)';
 	}
-	// if (isTouching(avatar, target)) {
-	// 	moveTarget();
-	// 	addPoint();
-	// }
+
 	if (timerId === 0) {
 		timerId = window.setInterval(move, interval)
-	}
+	};
 });
 
 const moveVertical = (element, amount) => {
 	const currTop = getPosition(element.style.top);
 	element.style.top = `${currTop + amount}px`;
+	if (isTouching(avatar, gameArea)) {
+		console.log('colission!')
+	}
 };
 
 const isInBorder = (element) => {
 	if (!currentDirection) return false;
-	return startTop + getPosition(element.style.top) - stepPixels < startTop
-		|| getPosition(element.style.top) + stepPixels > height + startTop
-		|| startLeft + getPosition(element.style.left) - stepPixels < startLeft
-		|| getPosition(element.style.left) + stepPixels > width + startLeft;
+	return (startTop + getPosition(element.style.top) - stepPixels < startTop + borderMargin && currentDirection === 'Up')
+		|| (getPosition(element.style.top) + stepPixels + element.clientHeight > height + startTop && currentDirection === 'Down')
+		|| (startLeft + getPosition(element.style.left) - stepPixels < startLeft + borderMargin && currentDirection === 'Left')
+		|| (getPosition(element.style.left) + stepPixels + element.clientWidth > width + startLeft && currentDirection === 'Right');
 };
 
 const isLeft = (element) => {
@@ -115,23 +108,43 @@ const moveHorizontal = (element, amount) => {
 	element.style.left = `${currLeft + amount}px`;
 };
 
-const getPosition = (pos) => {
+function getPosition(pos) {
 	if (!pos) return 100;
 	return parseInt(pos.slice(0, -2));
 };
 
 const moveTarget = () => {
-	const x = Math.floor(Math.random() * canvas.width);
-	const y = Math.floor(Math.random() * canvas.height);
+	const x = Math.floor(Math.random() * (width - target.clientWidth));
+	const y = Math.floor(Math.random() * (height - target.clientHeight));
+	console.log(x, y)
+	if (x > width
+		|| y > height) {
+		moveTarget();
+	}
 	target.style.top = `${y}px`;
 	target.style.left = `${x}px`;
 };
 
-const speed = (score) => {
-	return amount * score;
+const levelUp = () => {
+	levelGif.style.display = 'block';
+	setTimeout(() => { levelGif.style.display = 'none' }, 1300)
+	level++;
+	stepPixels++;
+	levelDisplay.textContent = level;
+	reset();
+};
+
+function isCollide(a, b) {
+	var aRect = a.getBoundingClientRect();
+	var bRect = b.getBoundingClientRect();
+
+	return !(
+		((aRect.top + aRect.height) < (bRect.top)) ||
+		(aRect.top > (bRect.top + bRect.height)) ||
+		((aRect.left + aRect.width) < bRect.left) ||
+		(aRect.left > (bRect.left + bRect.width))
+	);
 }
-
-
 // counter section
 const addPoint = () => {
 	if (!gameOver) {
@@ -140,22 +153,21 @@ const addPoint = () => {
 		if (p1Score === winningScore) {
 			gameOver = true;
 			p1Display.classList.add("winner");
+			levelUp();
 		}
 		p1Display.textContent = p1Score;
-	}
-}
-
-
+	};
+};
 
 resetButton.addEventListener("click", function () {
 	reset();
-})
+});
 
 numInput.addEventListener("change", function () {
 	scoreLimit.textContent = this.value;
 	winningScore = Number(this.value);
 	reset();
-})
+});
 
 function reset() {
 	p1Score = 0;
