@@ -1,4 +1,7 @@
-
+body {
+	background-image: url('https://i.pinimg.com/originals/43/db/43/43db4314b0a6c79827c301c5b1ab815c.jpg');
+	background-size: cover;
+}
 #player {
 	width: 150px;
 	position: absolute;
@@ -40,4 +43,7 @@
 	background-size: 600px 800px;
 	top: 10%;
 	left: 30%;
+	-webkit-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
+box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
 }
