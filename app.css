@@ -2,14 +2,24 @@ body {
 	background-image: url('https://i.pinimg.com/originals/43/db/43/43db4314b0a6c79827c301c5b1ab815c.jpg');
 	background-size: cover;
 }
+
 #player {
-	width: 150px;
+	width: 100px;
 	position: absolute;
 }
 
-
 #target {
 	width: 70px;
+	position: absolute;
+}
+
+.obstacle {
+	width: 50px;
+	position: absolute;
+}
+
+.life {
+	width: 50px;
 	position: absolute;
 }
 
@@ -28,6 +38,14 @@ body {
 	position: relative;
 	width: 500px;
 	height: 200px;
+	top: 30%;
+	display: none;
+}
+
+#lostGame {
+	position: relative;
+	width: 700px;
+	height: 400px;
 	top: 30%;
 	display: none;
 }

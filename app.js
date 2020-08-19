@@ -1,9 +1,13 @@
 let p1Button = document.querySelector("#p1");
 let resetButton = document.querySelector("#reset");
 let levelGif = document.querySelector('#levelUp');
-let p1Score = 0;
-let score = p1Score;
-let p1Display = document.querySelector("#p1Display");
+let lostGif = document.querySelector('#lostGame');
+let lifesDisplay = document.querySelector('#lifesDisplay');
+// let deadfall = document.querySelectorAll('#obstacle');
+let Score = 0;
+let lifes = 5;
+let score = Score;
+let Display = document.querySelector("#display");
 let gameOver = false;
 let winningScore = 5;
 let level = 0;
@@ -17,6 +21,7 @@ let startLeft = gameArea.clientLeft;
 let height = gameArea.clientHeight;
 let width = gameArea.clientWidth;
 const borderMargin = 5;
+let deadfall;
 
 function isTouching(a, b) {
 	const aRect = a.getBoundingClientRect();
@@ -33,8 +38,8 @@ const avatar = document.querySelector('#player');
 const target = document.querySelector('#target');
 let currentDirection;
 let timerId = 0;
-const interval = 10;
-let stepPixels = 10;
+let interval = 10;
+let stepPixels = 5;
 
 function move() {
 	if (!isInBorder(avatar)) {
@@ -58,9 +63,23 @@ function move() {
 	};
 
 	if (isTouching(avatar, target)) {
-		moveTarget();
+		moveTarget(target);
 		addPoint();
 	};
+
+	document.querySelectorAll('.obstacle').forEach(obstacle => {
+		if (isTouching(avatar, obstacle)) {
+			gameArea.removeChild(obstacle)
+			lifeMinus();
+		};
+	});
+
+	document.querySelectorAll('.life').forEach(life => {
+		if (isTouching(avatar, life)) {
+			gameArea.removeChild(life)
+			lifePlus();
+		};
+	});
 };
 
 window.addEventListener('keyup', function (event) {
@@ -84,11 +103,13 @@ window.addEventListener('keyup', function (event) {
 });
 
 const moveVertical = (element, amount) => {
+
 	const currTop = getPosition(element.style.top);
 	element.style.top = `${currTop + amount}px`;
-	if (isTouching(avatar, gameArea)) {
-		console.log('colission!')
-	}
+
+	// if (isTouching(avatar, gameArea)) {
+	// 	console.log('colission!')
+	// };
 };
 
 const isInBorder = (element) => {
@@ -104,6 +125,7 @@ const isLeft = (element) => {
 };
 
 const moveHorizontal = (element, amount) => {
+
 	const currLeft = getPosition(element.style.left);
 	element.style.left = `${currLeft + amount}px`;
 };
@@ -113,50 +135,43 @@ function getPosition(pos) {
 	return parseInt(pos.slice(0, -2));
 };
 
-const moveTarget = () => {
-	const x = Math.floor(Math.random() * (width - target.clientWidth));
-	const y = Math.floor(Math.random() * (height - target.clientHeight));
-	console.log(x, y)
-	if (x > width
-		|| y > height) {
-		moveTarget();
-	}
-	target.style.top = `${y}px`;
-	target.style.left = `${x}px`;
+const moveTarget = (whatToMove) => {
+	const x = startLeft + Math.floor(Math.random() * (width - whatToMove.clientWidth));
+	const y = startTop + Math.floor(Math.random() * (height - whatToMove.clientHeight));
+	// if (x > width
+	// 	|| y > height) {
+	// 	moveTarget(whatToMove);
+	// }
+
+	whatToMove.style.top = `${y}px`;
+	whatToMove.style.left = `${x}px`;
 };
 
 const levelUp = () => {
 	levelGif.style.display = 'block';
-	setTimeout(() => { levelGif.style.display = 'none' }, 1300)
+	stepPixels = 0;
+
+	setTimeout(() => {
+		levelGif.style.display = 'none'
+		stepPixels = 5;
+	}, 1300)
 	level++;
-	stepPixels++;
+	interval *= 15;
+	lifePlus();
 	levelDisplay.textContent = level;
-	reset();
+	Score = 0;
+	Display.textContent = Score;
+	randomLifes();
 };
 
-function isCollide(a, b) {
-	var aRect = a.getBoundingClientRect();
-	var bRect = b.getBoundingClientRect();
-
-	return !(
-		((aRect.top + aRect.height) < (bRect.top)) ||
-		(aRect.top > (bRect.top + bRect.height)) ||
-		((aRect.left + aRect.width) < bRect.left) ||
-		(aRect.left > (bRect.left + bRect.width))
-	);
-}
 // counter section
 const addPoint = () => {
-	if (!gameOver) {
-		p1Score++;
-		console.log(p1Score, winningScore);
-		if (p1Score === winningScore) {
-			gameOver = true;
-			p1Display.classList.add("winner");
-			levelUp();
-		}
-		p1Display.textContent = p1Score;
+	Score++;
+	if (Score === winningScore) {
+		levelUp();
 	};
+	randomObstacle();
+	Display.textContent = Score;
 };
 
 resetButton.addEventListener("click", function () {
@@ -166,12 +181,85 @@ resetButton.addEventListener("click", function () {
 numInput.addEventListener("change", function () {
 	scoreLimit.textContent = this.value;
 	winningScore = Number(this.value);
-	reset();
 });
 
+function randomObstacle() {
+	const randomTime = Math.random() * (10000);
+
+	const obstacle = document.createElement('img');
+	obstacle.src = 'https://cdn.lowgif.com/full/808f7bbed5c5cad4-pokemon-charizard-pixel-art-images-pokemon-images.gif';
+	const newId = 'obstacle' + randomTime;
+	obstacle.id = newId;
+	obstacle.className = 'obstacle';
+	gameArea.appendChild(obstacle);
+	deadfall = document.querySelector('#obstacle');
+	moveTarget(obstacle);
+
+	setTimeout(() => {
+		const tempObs = document.getElementById(newId);
+		if (tempObs) {
+			gameArea.removeChild(tempObs)
+		}
+	}, randomTime)
+};
+
+function randomLifes() {
+	const randomTime = Math.random() * (10000);
+	const life = document.createElement('img');
+	life.src = 'https://66.media.tumblr.com/81200ff00a011fa6738675ea289b22b0/tumblr_mj61vaGDwS1rfjowdo1_500.gif';
+	const newLifesId = 'life' + randomTime;
+	life.id = newLifesId;
+	life.className = 'life';
+	gameArea.appendChild(life);
+	moveTarget(life);
+
+	setTimeout(() => {
+		const newLife = document.getElementById(newLifesId);
+		if (newLife) {
+			gameArea.removeChild(newLife)
+		}
+	}, randomTime)
+};
+
+// lifes
+const lifePlus = () => {
+	lifes++;
+	lifesDisplay.textContent = lifes;
+};
+const lifeMinus = () => {
+	lifes--;
+	lifesDisplay.textContent = lifes;
+	if (lifes <= 0) {
+		lostGif.style.display = 'block';
+		stepPixels = 0;
+		setTimeout(() => {
+			lostGif.style.display = 'none'
+			reset();
+		}, 2500)
+	}
+};
+
+// function isCollide(a, b) {
+// 	var aRect = a.getBoundingClientRect();
+// 	var bRect = b.getBoundingClientRect();
+
+// 	return !(
+// 		((aRect.top + aRect.height) < (bRect.top)) ||
+// 		(aRect.top > (bRect.top + bRect.height)) ||
+// 		((aRect.left + aRect.width) < bRect.left) ||
+// 		(aRect.left > (bRect.left + bRect.width))
+// 	);
+// };
+
+
+
 function reset() {
-	p1Score = 0;
-	p1Display.textContent = p1Score;
-	p1Display.classList.remove("winner");
-	gameOver = false;
-}
+	Score = 0;
+	level = 1;
+	lifes = 5;
+	interval = 10;
+	stepPixels = 5;
+	Display.textContent = Score;
+	levelDisplay.textContent = level;
+	lifesDisplay.textContent = lifes;
+};
