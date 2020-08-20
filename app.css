@@ -30,7 +30,7 @@ body {
 	border: 2px solid black;
 	width: 600px;
 	height: 50px;
-	left: 30%;
+	left: 33%;
 	background-color: rgb(136, 210, 241);
 }
 
@@ -44,23 +44,23 @@ body {
 
 #lostGame {
 	position: relative;
-	width: 700px;
-	height: 400px;
-	top: 30%;
+	width: 900px;
+	height: 600px;
+	top: 2%;
 	display: none;
 }
 
 #gameArea{
 	border: 2px solid black;
-	position: relative;
-	width: 600px;
+	position: absolute;
+	width: 800px;
 	height: 600px;
 	justify-content: center;
 	display: flex;
 	background-image: url('https://i.pinimg.com/originals/97/e7/df/97e7df95745fa214a5958734575a25a8.jpg');
-	background-size: 600px 800px;
+	background-size: 800px 800px;
 	top: 10%;
-	left: 30%;
+	left: 25%;
 	-webkit-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
 -moz-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
 box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
