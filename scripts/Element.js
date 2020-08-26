@@ -1,17 +1,17 @@
 class Element {
     constructor(elementSelector, margin = 2) {
-        let htmlElement = document.querySelector(elementSelector);
-
-        this.htmlElement = htmlElement;
+        this.htmlElementSelector = elementSelector;
         this.margin = margin;
-        this.height = htmlElement.clientHeight;
-        this.width = htmlElement.clientWidth;
+    };
+
+    get htmlElement() {
+        return document.querySelector(this.htmlElementSelector);
     };
 
     get rightLimit() {
-        return this.width; //+this.left
+        return this.left + this.htmlElement.clientWidth;
     };
-    
+
     get leftLimit() {
         return this.left;
     };
@@ -21,19 +21,19 @@ class Element {
     };
 
     get bottomLimit() {
-        return this.top + this.height;
+        return this.top + this.htmlElement.clientHeight;
     };
 
     get top() {
-        return getPosition(this.htmlElement.style.top);
+        return this.getPosition(this.htmlElement.style.top);
     };
 
     get left() {
-        return getPosition(this.htmlElement.style.left);
+        return this.getPosition(this.htmlElement.style.left);
     };
 
     getPosition(pos) {
-        if (!pos) return 100;
+        if (!pos) return 0;
         return parseInt(pos.slice(0, -2));
     };
 };

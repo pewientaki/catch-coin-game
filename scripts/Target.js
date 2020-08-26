@@ -1,18 +1,18 @@
 class Target extends Element {
-    constructor(height, width, xLocation, yLocation) {
-        super(height, width, xLocation, yLocation)
-    };
+    constructor(targetElement) {
+        super('#' + targetElement.id, 2)
+    }
 
-    get rightLimit() {
-        return xLocation + width;
-    };
-    get leftLimit() {
-        return xLocation;
-    };
-    get topLimit() {
-        return yLocation;
-    };
-    get bottomLimit() {
-        return yLocation + height;
-    };
-};
+    static getNewTargetElement() {
+        const target = document.createElement('img');
+        target.src = 'https://media1.giphy.com/media/mCgctS9DY1UwOgSazb/giphy.gif';
+        target.id = 'target';
+        return target;
+    }
+
+    static addNewTargetToGame(gameArea) {
+        const target = Target.getNewTargetElement()
+        gameArea.htmlElement.appendChild(target);
+        return new Target(target);
+    }
+}

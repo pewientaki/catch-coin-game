@@ -1,54 +1,34 @@
-class Life extends Element {
-    constructor(height, width, xLocation, yLocation) {
-        super(height, width, xLocation, yLocation)
-    };
+class Life extends Change {
+    constructor(gameArea) {
+        super(gameArea, 'life', 'https://66.media.tumblr.com/81200ff00a011fa6738675ea289b22b0/tumblr_mj61vaGDwS1rfjowdo1_500.gif')
+        // const randomTime = Math.random() * (13000);
+        // const newLivesId = 'life' + randomTime;
+        // const idSelector = '#' + 'life1';
+        // //lifeElement.id = newLivesId;
+        // super(idSelector, 2)
 
-    get rightLimit() {
-        return xLocation + width;
-    };
-    get leftLimit() {
-        return xLocation;
-    };
-    get topLimit() {
-        return yLocation;
-    };
-    get bottomLimit() {
-        return yLocation + height;
-    };
-};
+        // this.timerId = setTimeout(() => {
+        //     const htmlElement = document.getElementById(idSelector);
 
-function randomLifes() {
-	const randomTime = Math.random() * (13000);
-	const life = document.createElement('img');
-	life.src = 'https://66.media.tumblr.com/81200ff00a011fa6738675ea289b22b0/tumblr_mj61vaGDwS1rfjowdo1_500.gif';
-	const newLifesId = 'life' + randomTime;
-	life.id = newLifesId;
-	life.className = 'life';
-	gameArea.appendChild(life);
-	moveTarget(life);
+        //     if (htmlElement) {
+        //         gameArea.removeChild(htmlElement)
+        //     }
+        // }, randomTime);
+    }
 
-	setTimeout(() => {
-		const newLife = document.getElementById(newLifesId);
-		if (newLife) {
-			gameArea.removeChild(newLife)
-		}
-	}, randomTime)
-};
+    // static getNewLifeElement() {
+    //     const lifeElement = document.createElement('img');
+    //     lifeElement.src = 'https://66.media.tumblr.com/81200ff00a011fa6738675ea289b22b0/tumblr_mj61vaGDwS1rfjowdo1_500.gif';
+    //     lifeElement.className = 'life';
+    //     // lifeElement.id = 'life1';
+    //     lifeElement.id = this.idSelector;
+    //     return lifeElement;
+    // };
 
-// lifes
-const lifePlus = () => {
-	lifes++;
-	lifesDisplay.textContent = lifes;
-};
-const lifeMinus = () => {
-	lifes--;
-	lifesDisplay.textContent = lifes;
-	if (lifes <= 0) {
-		lostGif.style.display = 'block';
-		stepPixels = 0;
-		setTimeout(() => {
-			lostGif.style.display = 'none'
-			reset();
-		}, 2500)
-	}
+    // static addNewLifeToGame(gameArea) {
+    //     const lifeElement = Life.getNewLifeElement();
+    //     gameArea.htmlElement.appendChild(lifeElement);
+    //     gameArea.moveTarget(lifeElement);
+    //     return new Life(lifeElement);
+    // };
 };

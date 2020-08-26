@@ -6,11 +6,15 @@ body {
 #player {
 	width: 100px;
 	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: none;
 }
 
 #target {
 	width: 70px;
 	position: absolute;
+	display: none;
 }
 
 .obstacle {
@@ -64,4 +68,8 @@ body {
 	-webkit-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
 -moz-box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
 box-shadow: 10px 15px 91px 0px rgba(0,0,0,0.75);
+}
+
+.sound {
+display: none;
 }
