@@ -22,21 +22,23 @@ class GameArea extends Element {
         return this.bottomLimit + this.margin;
     };
 
-    showElements() {
+    // create avatar and target elements
+    addElementsToGameArea() {
         this.avatar = Avatar.addNewAvatarToGame(this);
         this.target = Target.addNewTargetToGame(this);
-        this.avatar.htmlElement.style.display = 'block';
-        document.querySelector('#target').style.display = 'block';
     };
 
     // remove all elements from game area
-    hideElements() {
-        document.querySelectorAll('.obstacle').forEach(obstacle => this.htmlElement.removeChild(obstacle));
-        document.querySelectorAll('.life').forEach(life => this.htmlElement.removeChild(life));
-        document.querySelectorAll('#target').forEach(target => this.htmlElement.removeChild(target));
-        document.querySelectorAll('#player').forEach(player => this.htmlElement.removeChild(player));
+    removeAllElementsFromGame() {
+        try {
+            document.querySelectorAll('.obstacle').forEach(obstacle => this.htmlElement.removeChild(obstacle));
+            document.querySelectorAll('.life').forEach(life => this.htmlElement.removeChild(life));
+            this.htmlElement.removeChild(this.avatar.htmlElement);
+            this.htmlElement.removeChild(this.target.htmlElement);
+        } catch (error) {
+            console.log(error);
+        }
     };
-
 
     // move object at random location within game area 
     moveTarget = (whatToMove) => {
