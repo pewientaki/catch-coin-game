@@ -8,13 +8,11 @@ body {
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	display: none;
 }
 
 #target {
 	width: 70px;
 	position: absolute;
-	display: none;
 }
 
 .obstacle {
