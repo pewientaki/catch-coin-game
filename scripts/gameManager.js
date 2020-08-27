@@ -3,10 +3,10 @@ class gameManager {
 		this.score = 0;
 		this.winningScore = 10;
 		this.timerId;
-		this.obstacleInterval;
-		this.lifeInterval;
+		this.obstaclesCreatingThreads = [];
+		this.livesCreatingThreads = [];
 		this.interval = 10;
-		this.stepPixels = 5;
+		this.stepPixels = 2;
 		this.lives = 5;
 		this.level = 1;
 		this.gameOver = false;
@@ -21,6 +21,7 @@ class gameManager {
 		this.levelDisplay = document.querySelector("#levelDisplay");
 		this.soundLevel = document.querySelector("#soundLevel");
 		this.soundLife = document.querySelector("#soundLife");
+		this.goal = document.querySelector('#scoreLimit');
 
 		this.currentDirection = '';
 
@@ -39,22 +40,21 @@ class gameManager {
 
 	// create avatar and sushi elements, add first obstacle to the game
 	startGame() {
+		this.reset();
 		this.gameOver = false;
-		this.board.showElements();
+		this.board.addElementsToGameArea();
 		this.timerId = setInterval(() => this.move(), this.interval);
-		setTimeout(() => this.createObstacle(), 2000);
+		this.createObstacleCreator();
 	}
 
 	// end game, stop intervals
 	endGame() {
 		this.gameOver = true;
-		this.lostGif.style.display = 'block';
 		this.stepPixels = 0;
-		this.board.hideElements();
-
+		this.reset();
+		this.lostGif.style.display = 'block';
 		setTimeout(() => {
 			this.lostGif.style.display = 'none'
-			this.reset();
 		}, 2500)
 	}
 
@@ -62,7 +62,6 @@ class gameManager {
 	lifePlus() {
 		this.lives++;
 		this.livesDisplay.textContent = this.lives;
-		this.soundLife.play();
 	}
 
 	// remove one life & end game if required
@@ -78,17 +77,19 @@ class gameManager {
 	reset() {
 		this.gameOver = false;
 		clearInterval(this.timerId);
-		clearInterval(this.obstacleInterval);
+		this.obstaclesCreatingThreads.forEach(p => clearInterval(p));
+		this.livesCreatingThreads.forEach(p => clearInterval(p));
 		this.score = 0;
 		this.level = 1;
 		this.lives = 5;
 		this.interval = 1;
-		this.stepPixels = 5;
+		this.stepPixels = 2;
+		this.setGoal(5);
 		this.scoreDisplay.textContent = this.score;
 		this.levelDisplay.textContent = this.level;
 		this.livesDisplay.textContent = this.lives;
 		this.currentDirection = '';
-		this.board.hideElements();
+		this.board.removeAllElementsFromGame();
 	}
 
 	// add point and increase level if relevant
@@ -108,13 +109,13 @@ class gameManager {
 
 		setTimeout(() => {
 			this.levelGif.style.display = 'none'
-			this.stepPixels = 5 + this.level;
+			this.setSpeed();
 		}, 1300)
 
 		this.level++;
 		this.lifePlus();
-		this.createLifeObject();
-		this.createObstacle();
+		this.createLivesCreator();
+		this.createObstacleCreator();
 
 
 		this.levelDisplay.textContent = this.level;
@@ -122,7 +123,7 @@ class gameManager {
 		this.scoreDisplay.textContent = this.score;
 	}
 
-	// move avatar & detects any collisions
+	// move avatar & detect any collisions
 	move() {
 		if (!this.isInBorder(this.board.avatar)) {
 			switch (this.currentDirection) {
@@ -158,11 +159,13 @@ class gameManager {
 			};
 		});
 
-		// detect colission with life object
+		// detect colission with life object & play life
 		document.querySelectorAll('.life').forEach(life => {
 			if (this.board.isTouching(this.board.avatar.htmlElement, life)) {
 				this.board.htmlElement.removeChild(life)
 				this.lifePlus();
+				this.soundLife.play();
+
 			};
 		});
 	}
@@ -225,27 +228,47 @@ class gameManager {
 	};
 
 	// add obstacle to game area & set interval according to the level
-	createObstacle() {
-		if (!this.gameOver) {
-			this.obstacleInterval = setInterval(() => {
-				const obstacleObject = new Obstacle(this.board)
-				return obstacleObject;
+	createObstacleCreator() {
+		this.obstaclesCreatingThreads.push(setInterval(() => {
+			const obstacleObject = new Obstacle(this.board)
+			return obstacleObject;
 
-			}, (7000 / this.level));
-		}
+		}, (7000 / this.level)));
 	}
 
 	// add life object to game area & set interval according to the level
-	createLifeObject() {
+	createLivesCreator() {
+		this.livesCreatingThreads.push(setInterval(() => {
+			const lifeObject = new Life(this.board)
+			return lifeObject;
 
-		if (!this.gameOver) {
-			clearInterval(this.lifeInterval);
-			this.lifeInterval = setInterval(() => {
-				const lifeObject = new Life(this.board)
-				return lifeObject;
+		}, 10000 / this.level));
+	}
 
-			}, 10000 / this.level);
+	setSpeed() {
+		if (this.level < 3) {
+			this.stepPixels = 2 + (this.level / 5);
 		}
+		else if (this.level >= 3) {
+			this.stepPixels = 2 + (this.level / 4);
+			this.setGoal(6);
+		}
+		else if (this.level > 6) {
+			this.stepPixels = 2 + (this.level / 3.5);
+			this.setGoal(7);
+		} else if (this.level > 8) {
+			this.stepPixels = 2 + (this.level / 3);
+			this.setGoal(9);
+		} else if (this.level > 10) {
+			this.stepPixels = 2 + (this.level / 2);
+			this.setGoal(10);
+		}
+		console.log(this.stepPixels);
+	}
+
+	setGoal(value) {
+		this.winningScore = value;
+		this.goal.textContent = this.winningScore;
 	}
 }
 
