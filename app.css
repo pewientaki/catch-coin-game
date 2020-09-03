@@ -57,6 +57,10 @@ transition-duration: 200ms;
 	position: absolute;
 }
 
+.extra {
+	width: 100px;
+	position: absolute;
+}
 #scoreCounter{
 	display: flex;
 	justify-content: space-evenly;
