@@ -20,8 +20,12 @@
     <button id="reset">Reset</button>
   </div>
   <div id='gameArea'>
-    <img id='levelUp' src='https://thumbs.gfycat.com/UnluckyForcefulEnglishpointer.webp' alt='levelup'>
-    <img id="lostGame" src="https://i.pinimg.com/originals/31/d3/b8/31d3b82fa4e478b184f1258458ff433f.gif" alt="defeat">
+    <img id='levelUp' src='https://thumbs.gfycat.com/UnluckyForcefulEnglishpointer.webp' alt='levelUpGif'>
+    <img id="lostGame" src="https://i.pinimg.com/originals/31/d3/b8/31d3b82fa4e478b184f1258458ff433f.gif"
+      alt="defeatGif">
+    <img id="pikachuAttack"
+      src="https://media1.tenor.com/images/de05306e8cf2c0d6b53374bbc9784479/tenor.gif?itemid=5852279"
+      alt="PikachAttackGif">
   </div>
 
   <audio controls id='soundLevel' class='sound'>
@@ -30,14 +34,16 @@
   <audio controls id='soundLife' class='sound'>
     <source src='./public/pikachu.mp3' type='audio/mpeg'>
   </audio>
-
+  <audio controls id='pikachuAttackSound' class='sound'>
+    <source src='./public/pikachuAttack.mp3' type='audio/mpeg'>
+  </audio>
   <script src='./scripts/Element.js'></script>
   <script src='./scripts/Change.js'></script>
   <script src='./scripts/Avatar.js'></script>
   <script src='./scripts/Target.js'></script>
   <script src='./scripts/Obstacle.js'></script>
   <script src='./scripts/Life.js'></script>
-  <script src='./scripts/Extras.js'></script>
+  <script src='./scripts/Bomb.js'></script>
   <script src='./scripts/GameArea.js'></script>
   <script src='./scripts/ElementsProvider.js'></script>
 

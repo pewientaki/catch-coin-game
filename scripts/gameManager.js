@@ -3,7 +3,7 @@ class gameManager {
 		this.stepPixels = 2;
 		this.elements = new ElementsProvider();
 		this.scoreManager = new ScoreManager(this.elements);
-		this.moveEvent = new MoveEvent(this.elements, this.stepPixels, this.scoreManager);
+		this.moveEvent = new MoveEvent(this.elements, this.stepPixels, this.scoreManager, this.pause);
 		this.events = new Events(this.elements, this.level, this.moveEvent, this.scoreManager);
 		this.timerId;
 		this.interval = 20;
@@ -11,6 +11,8 @@ class gameManager {
 		this.resetButton = document.querySelector("#reset");
 		this.levelGif = document.querySelector('#levelUp');
 		this.lostGif = document.querySelector('#lostGame');
+		this.attackGif = document.querySelector('#pikachuAttack');
+		this.attackSound = document.querySelector('#pikachuAttackSound');
 
 		// start button
 		this.startButton.addEventListener('click', () => {
@@ -39,6 +41,11 @@ class gameManager {
 			if (this.scoreManager.lives === 0) {
 				this.endGame();
 			}
+			if (this.moveEvent.collisionDetector.bombCollided) {
+				this.attackSound.play();
+				this.pause(1600, this.attackGif);
+				this.moveEvent.collisionDetector.bombCollided = false;
+			}
 		}, this.interval);
 		this.elements.createObstacleCreator();
 	}
@@ -48,10 +55,7 @@ class gameManager {
 		this.scoreManager.gameOver = true;
 		this.stepPixels = 0;
 		this.reset();
-		this.lostGif.style.display = 'block';
-		setTimeout(() => {
-			this.lostGif.style.display = 'none'
-		}, 2500)
+		this.pause(1500, this.lostGif);
 	}
 
 	// restore game to initial settings
@@ -71,5 +75,15 @@ class gameManager {
 		this.scoreManager.livesDisplay.textContent = this.scoreManager.lives;
 		this.moveEvent.currentDirection = '';
 		this.elements.removeAllElementsFromGame();
+	}
+
+	pause(time, animation) {
+		this.scoreManager.stepPixels = 0;
+		const toShow = animation;
+		toShow.style.display = 'block'
+		setTimeout(() => {
+			toShow.style.display = 'none'
+			this.scoreManager.setSpeed();
+		}, time)
 	}
 }
