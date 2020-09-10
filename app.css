@@ -7,6 +7,7 @@ body {
 
 #start{
 width: 8%;
+font-size: 1.3vw;
 border: none;
 border-radius: 5em;
 outline: none;
@@ -21,6 +22,7 @@ transition-duration: 200ms;
 
 #reset{
 width: 8%;
+font-size: 1.3vw;
 border: none;
 outline: none;
 border-radius: 5em;
@@ -48,7 +50,7 @@ transition-duration: 200ms;
 }
 
 .obstacle {
-	width: 50px;
+	width: 60px;
 	position: absolute;
 }
 
