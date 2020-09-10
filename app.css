@@ -59,10 +59,19 @@ transition-duration: 200ms;
 	position: absolute;
 }
 
-.extra {
+.bomb {
 	width: 100px;
 	position: absolute;
 }
+
+#pikachuAttack {
+	position: relative;
+	width: 90%;
+	height: 90%;
+	top: 5%;
+	display: none;
+}
+
 #scoreCounter{
 	display: flex;
 	justify-content: space-evenly;
