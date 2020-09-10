@@ -7,12 +7,13 @@ class Target extends Element {
         const target = document.createElement('img');
         target.src = 'https://media1.giphy.com/media/mCgctS9DY1UwOgSazb/giphy.gif';
         target.id = 'target';
+        target.setAttribute("crossorigin", "anonymous")
         return target;
     }
 
     static addNewTargetToGame(gameArea) {
         const target = Target.getNewTargetElement()
-        gameArea.htmlElement.appendChild(target);
+        gameArea.htmlElementRoot.appendChild(target);
         return new Target(target);
     }
 }

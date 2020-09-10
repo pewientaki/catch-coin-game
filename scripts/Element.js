@@ -4,16 +4,24 @@ class Element {
         this.margin = margin;
     };
 
-    get htmlElement() {
+    get htmlElementRoot() {
         return document.querySelector(this.htmlElementSelector);
     };
 
     get rightLimit() {
-        return this.left + this.htmlElement.clientWidth;
+        return this.left + this.htmlElementRoot.clientWidth - this.margin;
+    };
+
+    get width() {
+        return this.htmlElementRoot.clientWidth;
+    };
+
+    get height() {
+        return this.htmlElementRoot.clientHeight;
     };
 
     get leftLimit() {
-        return this.left;
+        return this.left - this.margin;
     };
 
     get topLimit() {
@@ -21,15 +29,15 @@ class Element {
     };
 
     get bottomLimit() {
-        return this.top + this.htmlElement.clientHeight;
+        return this.top + this.htmlElementRoot.clientHeight - this.margin;
     };
 
     get top() {
-        return this.getPosition(this.htmlElement.style.top);
+        return this.getPosition(this.htmlElementRoot.style.top);
     };
 
     get left() {
-        return this.getPosition(this.htmlElement.style.left);
+        return this.getPosition(this.htmlElementRoot.style.left);
     };
 
     getPosition(pos) {

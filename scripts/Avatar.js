@@ -12,7 +12,7 @@ class Avatar extends Element {
 
     static addNewAvatarToGame(gameArea) {
         const avatar = Avatar.getNewAvatarElement()
-        gameArea.htmlElement.appendChild(avatar);
+        gameArea.htmlElementRoot.appendChild(avatar);
         return new Avatar(avatar);
     }
 }
