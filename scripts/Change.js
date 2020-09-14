@@ -13,12 +13,6 @@ class Change extends Element {
 
         super(idSelector, 2)
 
-        setTimeout(() => {
-            const changeToRemove = document.getElementById(newChangeId);
-
-            if (changeToRemove) {
-                gameArea.htmlElementRoot.removeChild(changeToRemove)
-            }
-        }, randomTime);
-    };
-};
+        this.randomTime = randomTime;
+    }
+}
