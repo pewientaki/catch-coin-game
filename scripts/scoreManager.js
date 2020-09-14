@@ -7,7 +7,7 @@ class ScoreManager {
         this.stepPixels = 2;
         this.lives = 5;
         this.level = 1;
-        this.gameOver = false;
+        this.gameOver = true;
         this.levelGif = document.querySelector('#levelUp');
         this.lostGif = document.querySelector('#lostGame');
         this.livesDisplay = document.querySelector('#livesDisplay');
@@ -67,6 +67,7 @@ class ScoreManager {
         else if (this.level >= 3) {
             this.stepPixels = 2 + (this.level / 4);
             this.setGoal(6);
+            this.elements.createBombCreator();
         }
         else if (this.level > 6) {
             this.stepPixels = 2 + (this.level / 3.5);
@@ -74,6 +75,7 @@ class ScoreManager {
         } else if (this.level > 8) {
             this.stepPixels = 2 + (this.level / 3);
             this.setGoal(9);
+            this.elements.createBombCreator();
         } else if (this.level > 10) {
             this.stepPixels = 2 + (this.level / 2);
             this.setGoal(10);
