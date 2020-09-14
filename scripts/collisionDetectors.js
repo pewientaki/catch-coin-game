@@ -3,19 +3,33 @@ class collisionDetector {
         this.elements = elements;
         this.stepPixels = stepPixels;
         this.scoreManager = scoreManager;
-		this.soundLife = document.querySelector("#soundLife");
+        this.soundLife = document.querySelector("#soundLife");
+        this.bombCollided = false;
     }
 
     // colission detector
     isTouching(a, b) {
-        const aRect = a.getBoundingClientRect();
         const bRect = b.getBoundingClientRect();
+        return this.isPotentiallyTouching(a, bRect.top, bRect.left, bRect.width, bRect.height);
+    };
+
+    // colission detector
+    isPotentiallyTouching(source, targetTop, targetLeft, targetWidth, targetHeight) {
+        const sourceRect = source.getBoundingClientRect();
         return !(
-            aRect.top + aRect.height < bRect.top ||
-            aRect.top > bRect.top + bRect.height ||
-            aRect.left + aRect.width < bRect.left ||
-            aRect.left > bRect.left + bRect.width
+            sourceRect.top + sourceRect.height < targetTop ||
+            sourceRect.top > targetTop + targetHeight ||
+            sourceRect.left + sourceRect.width < targetLeft ||
+            sourceRect.left > targetLeft + targetWidth
         );
+    };
+
+    // colission detector
+    isPotentiallyTouchingAnything(targetTop, targetLeft, targetWidth, targetHeight) {
+        return this.elements.changeElements.some(p =>
+            this.isPotentiallyTouching(p.htmlElementRoot, targetTop, targetLeft, targetWidth, targetHeight))
+            || this.isPotentiallyTouching(this.elements.target.htmlElementRoot, targetTop, targetLeft, targetWidth, targetHeight)
+            || this.isPotentiallyTouching(this.elements.avatar.htmlElementRoot, targetTop, targetLeft, targetWidth, targetHeight);
     };
 
     // border colission
@@ -44,26 +58,27 @@ class collisionDetector {
         return this.getPosition(element.htmlElementRoot.style.left) + this.stepPixels + element.htmlElementRoot.clientWidth > this.elements.board.rightBorder && currentDirection === 'Right';
     };
 
-    catchColission(htmlElementName, avatar) {
+    catchColission(htmlElementName) {
         switch (htmlElementName) {
             case 'life':
-                this.lifeColission(avatar);
+                this.lifeColission();
                 break;
             case 'obstacle':
-                this.obstacleColission(avatar);
+                this.obstacleColission();
                 break;
-            case 'target':
-                this.targetColission(avatar);
+            // case 'target':
+            //     this.targetColission();
+            case 'bomb':
+                this.bombColission();
         }
     }
 
     lifeColission() {
-
-        const lifeObjects = document.querySelectorAll('.life');
+        const lifeObjects = this.elements.changeElements.filter(p => p instanceof Life);
         if (lifeObjects !== undefined) {
             lifeObjects.forEach((lifeObject => {
-                if (this.isTouching(lifeObject, this.elements.avatar.htmlElementRoot)) {
-                    this.findElementAndRemove(lifeObject);
+                if (this.isTouching(lifeObject.htmlElementRoot, this.elements.avatar.htmlElementRoot)) {
+                    this.elements.findElementAndRemove(lifeObject);
                     this.scoreManager.lifePlus();
                     this.soundLife.play();
                 }
@@ -73,32 +88,34 @@ class collisionDetector {
     }
 
     obstacleColission() {
-        const obstacleObjects = document.querySelectorAll('.obstacle');
+        const obstacleObjects = this.elements.changeElements.filter(p => p instanceof Obstacle);
         if (obstacleObjects !== undefined) {
             obstacleObjects.forEach((obstacleObject => {
-                if (this.isTouching(obstacleObject, this.elements.avatar.htmlElementRoot)) {
+                if (this.isTouching(obstacleObject.htmlElementRoot, this.elements.avatar.htmlElementRoot)) {
                     // this.findElementAndRemove(obstacleObject.id);
-                    this.findElementAndRemove(obstacleObject)
+                    this.elements.findElementAndRemove(obstacleObject)
                     this.scoreManager.lifeMinus();
                 }
             }))
         }
     }
 
-    targetColission() {
-        if (this.isTouching(this.elements.target.htmlElementRoot, this.elements.avatar.htmlElementRoot)) {
-            HtmlEvents.moveTarget(this.elements.board, this.elements.target)
-            this.scoreManager.addPoint();
-            if (this.scoreManager.score === this.scoreManager.winningScore) {
-                        this.elements.createLivesCreator();
-                        this.elements.createObstacleCreator();
-                    };
-        }
+    isAvatarColidingWithTarget() {
+        return this.isTouching(this.elements.target.htmlElementRoot, this.elements.avatar.htmlElementRoot);
     }
 
-    findElementAndRemove(current) {
-        // const toRemove = document.querySelector('#' + current)
-        this.elements.board.htmlElementRoot.removeChild(current)
+    bombColission() {
+        const bombObjects = this.elements.changeElements.filter(p => p instanceof Bomb);
+        if (bombObjects !== undefined) {
+            bombObjects.forEach((bombObject => {
+                if (this.isTouching(bombObject.htmlElementRoot, this.elements.avatar.htmlElementRoot)) {
+                    this.elements.findElementAndRemove(bombObject);
+                    this.elements.removeAllObstacles();
+                    this.elements.bombsCreatingThreads.forEach(p => clearInterval(p));
+                    this.bombCollided = true;
+                }
+            }))
+        }
     }
 
     // get position without 'px'

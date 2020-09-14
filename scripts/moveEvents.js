@@ -31,9 +31,9 @@ class MoveEvent {
                     break;
             };
 
-            this.collisionDetector.catchColission('target', this.elements.avatar);
-            this.collisionDetector.catchColission('life', this.elements.avatar);
-            this.collisionDetector.catchColission('obstacle', this.elements.avatar);
+            this.collisionDetector.catchColission('life');
+            this.collisionDetector.catchColission('obstacle');
+            this.collisionDetector.catchColission('bomb');
         }
     }
 

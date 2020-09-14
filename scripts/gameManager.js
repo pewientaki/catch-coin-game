@@ -5,6 +5,8 @@ class gameManager {
 		this.scoreManager = new ScoreManager(this.elements);
 		this.moveEvent = new MoveEvent(this.elements, this.stepPixels, this.scoreManager, this.pause);
 		this.events = new Events(this.elements, this.level, this.moveEvent, this.scoreManager);
+		this.collisionDetector = new collisionDetector(this.elements, this.stepPixels, this.scoreManager);
+		this.htmlEventsNew = new HtmlEventsNew(this.collisionDetector);
 		this.timerId;
 		this.interval = 20;
 		this.startButton = document.querySelector("#start");
@@ -16,7 +18,7 @@ class gameManager {
 
 		// start button
 		this.startButton.addEventListener('click', () => {
-			if (this.scoreManager.gameOver) {
+			if (!this.scoreManager.gameOver) {
 				return;
 			}
 			clearInterval(this.timerId);
@@ -35,24 +37,51 @@ class gameManager {
 		this.scoreManager.gameOver = false;
 		this.elements.addNewAvatar();
 		this.elements.addNewTarget();
-		this.timerId = setInterval(() => {
-			this.moveEvent.runAvatar();
-			// post run checks
-			if (this.scoreManager.lives === 0) {
-				this.endGame();
-			}
-			if (this.moveEvent.collisionDetector.bombCollided) {
-				this.attackSound.play();
-				this.pause(1600, this.attackGif);
-				this.moveEvent.collisionDetector.bombCollided = false;
-			}
-		}, this.interval);
+		this.timerId = setInterval(() => this.runGameInterval(), this.interval);
 		this.elements.createObstacleCreator();
+	}
+
+	runGameInterval() {
+		this.moveEvent.runAvatar();
+
+		if (this.collisionDetector.isAvatarColidingWithTarget()) {
+			this.htmlEventsNew.moveTarget(this.elements.target)
+			this.scoreManager.addPoint();
+		}
+
+		// detect collision (sushi)
+		// if collision happened, do something
+
+		// detect collision (obsticle)
+		// if collision happened, do something
+
+		// detect collision (bomb)
+		// if collision happened, do something
+
+		// detect collision (life)
+		// if collision happened, do something (change score, life up/down)
+
+		// score change check list: 
+		// if end game needed, end game.
+		// If level up needed - call level up functionality
+
+		// post run checks
+		if (this.scoreManager.lives === 0) {
+			this.endGame();
+		}
+		else if (this.scoreManager.score === this.scoreManager.winningScore) {
+			this.elements.createLivesCreator();
+			this.elements.createObstacleCreator();
+		}
+		if (this.moveEvent.collisionDetector.bombCollided) {
+			this.attackSound.play();
+			this.pause(1600, this.attackGif);
+			this.moveEvent.collisionDetector.bombCollided = false;
+		}
 	}
 
 	// end game, clear intervals, display gameover gif
 	endGame() {
-		this.scoreManager.gameOver = true;
 		this.stepPixels = 0;
 		this.reset();
 		this.pause(1500, this.lostGif);
@@ -60,10 +89,11 @@ class gameManager {
 
 	// restore game to initial settings
 	reset() {
-		this.scoreManager.gameOver = false;
+		this.scoreManager.gameOver = true;
 		clearInterval(this.timerId);
 		this.elements.obstaclesCreatingThreads.forEach(p => clearInterval(p));
 		this.elements.livesCreatingThreads.forEach(p => clearInterval(p));
+		this.elements.bombsCreatingThreads.forEach(p => clearInterval(p));
 		this.scoreManager.score = 0;
 		this.scoreManager.level = 1;
 		this.scoreManager.lives = 5;
