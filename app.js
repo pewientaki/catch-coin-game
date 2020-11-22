@@ -1,1 +1,1 @@
-const manager = new gameManager();
+const manager = new GameManager();
