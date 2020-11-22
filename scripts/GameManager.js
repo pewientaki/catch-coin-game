@@ -9,8 +9,8 @@ class GameManager {
 		this.htmlEventsNew = new HtmlEventsNew(this.collisionDetector);
 		this.timerId;
 		this.interval = 20;
-		this.startButton = document.querySelector("#start");
-		this.resetButton = document.querySelector("#reset");
+		this.startButton = document.querySelector('#start');
+		this.resetButton = document.querySelector('#reset');
 		this.levelGif = document.querySelector('#levelUp');
 		this.lostGif = document.querySelector('#lostGame');
 		this.attackGif = document.querySelector('#pikachuAttack');
@@ -46,15 +46,14 @@ class GameManager {
 
 		// detect collision (sushi)
 		if (this.collisionDetector.isAvatarColidingWithTarget()) {
-			this.htmlEventsNew.moveTarget(this.elements.target)
+			this.htmlEventsNew.moveTarget(this.elements.target);
 			this.scoreManager.addPoint();
 		}
 
 		// post run checks
 		if (this.scoreManager.lives === 0) {
 			this.endGame();
-		}
-		else if (this.scoreManager.score === this.scoreManager.winningScore) {
+		} else if (this.scoreManager.score === this.scoreManager.winningScore) {
 			this.elements.createLivesCreator();
 			this.elements.createObstacleCreator();
 		}
@@ -65,13 +64,20 @@ class GameManager {
 		}
 	}
 
+	// end game, clear intervals, display gameover gif
+	endGame() {
+		this.stepPixels = 0;
+		this.reset();
+		this.pause(1500, this.lostGif);
+	}
+
 	// restore game to initial settings
 	reset() {
 		this.scoreManager.gameOver = true;
 		clearInterval(this.timerId);
-		this.elements.obstaclesCreatingThreads.forEach(p => clearInterval(p));
-		this.elements.livesCreatingThreads.forEach(p => clearInterval(p));
-		this.elements.bombsCreatingThreads.forEach(p => clearInterval(p));
+		this.elements.obstaclesCreatingThreads.forEach((p) => clearInterval(p));
+		this.elements.livesCreatingThreads.forEach((p) => clearInterval(p));
+		this.elements.bombsCreatingThreads.forEach((p) => clearInterval(p));
 		this.scoreManager.score = 0;
 		this.scoreManager.level = 1;
 		this.scoreManager.lives = 5;
@@ -83,5 +89,15 @@ class GameManager {
 		this.scoreManager.livesDisplay.textContent = this.scoreManager.lives;
 		this.moveEvents.currentDirection = '';
 		this.elements.removeAllElementsFromGame();
+	}
+
+	pause(time, animation) {
+		this.scoreManager.stepPixels = 0;
+		const toShow = animation;
+		toShow.style.display = 'block';
+		setTimeout(() => {
+			toShow.style.display = 'none';
+			this.scoreManager.setSpeed();
+		}, time);
 	}
 }
